@@ -1,0 +1,6 @@
+run on command prompt not on windows powersheel
+\01_full stack\ecom\stripe.exe" login  
+:- Press Enter to open the browser or visit https://dashboard.stripe.com/stripecli/confirm_auth?t=QkzeYnSYaDmHdkPMCPYTFhdiwBjUDtNU (^C to quit)exceeded max attempts
+
+stripe listen --forward-to localhost:3000/api/v1/webhook
+> Ready! You are using Stripe API Version [2024-06-20]. Your webhook signing secret is whsec_af8e21520e62ec15df0404afb5785fb0c99d96b827bea145eca03c4963bafdee (^C to quit)
