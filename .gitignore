@@ -1,5 +1,5 @@
 00install_command
-ngork.exe
+ngork
 postcss.config.js
 run stripe cle.txt
 stripe.exe
