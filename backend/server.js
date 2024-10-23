@@ -1,4 +1,4 @@
-// require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session')
@@ -133,8 +133,9 @@ app.get('/abc',(req,res)=>{
     res.json({success:true});
 })
 
-
-app.listen(3000,()=>{
+const port = process.env.PORT;
+console.log(port)
+app.listen(port,()=>{
     console.log('server started');
 })
 
