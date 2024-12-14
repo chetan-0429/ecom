@@ -4,10 +4,8 @@ function Brand() {
     const location = useLocation();
     const navigate = useNavigate()
 
-    // console.log('location :- ',location)
     const params = new URLSearchParams(location.search);
     const category = params.get('category') || params.get('keyword');
-    // console.log('category is ', category)
     const allBrandList = {
         shoes:["Adidas","Puma","Nike","Campus"],
         tshirt:["Red-tape","Jockey","Levis","Wrogn"],
@@ -19,7 +17,6 @@ function Brand() {
     function handleChange(e,brand){
         const searched = location.search;
         if(e.target.checked){
-            console.log('yesssssss')
             navigate(`${searched}&company=${brand}`)
         }
         else{

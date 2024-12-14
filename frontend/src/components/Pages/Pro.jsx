@@ -35,19 +35,4 @@ export default Productcard;
 
 
 
-// import React from 'react'
 
-// function Productcard({ name,image, price }) {
-//   return (
-//     <div className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden w-64 mr-8 mb-8">
-//     <img className="w-full h-96 object-cover mx-auto" src={image} alt={name}  />
-//     <div className="p-4">
-//       <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
-//       <h3 className="text-lg font-semibold text-gray-800">${price}</h3>
-      
-//     </div>
-//   </div>
-//   )
-// }
-
-// export default Productcard

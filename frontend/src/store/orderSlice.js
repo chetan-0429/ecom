@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import api from "../api";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
-// Async thunk for fetching order products
 export const fetchOrder = createAsyncThunk(
     'cart/fetchOrder',
     async (_, thunkAPI) => {
         try {
-            const response = await axios.get('/api/v1/order'); 
+            const response = await api.get(`${apiUrl}/order`); 
             const {orderDetails,success} = response.data;
-            // console.log('called for fetch: ',orderDetails)
             if(!success){
                 throw new Error('failed to fetch order');
             }

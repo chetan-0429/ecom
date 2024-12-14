@@ -4,22 +4,20 @@ import {logout} from '../../store/authSlice'
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { clearCart } from '../../store/cartSlice';
-
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 import axios from 'axios';
+
 function Logout() {
    const navigate = useNavigate();
 const dispatch = useDispatch();
 async function userLogout() {
     try{
-     const response = await axios.get('/api/v1/users/logout');
-     if(response.data.success){
+
          dispatch(logout());
          dispatch(clearCart());
          navigate('/login');
-     }
-     else{
-        console.log('logout failed');
-     }
+    
+    
     }catch(err){
         console.log('error in destroying');
     }
@@ -27,7 +25,6 @@ async function userLogout() {
 function handleSubmit(e){
     e.preventDefault();
     userLogout();
-
 }
 
 

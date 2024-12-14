@@ -14,7 +14,7 @@ const User = require('../models/userModel')
 // }
 async function getAllOrder(req,res,next){
     try{
-        console.log('order called')
+        if(!req.user) {return res.status(401).json({success:false})};
         const orders = await Order.find({}).sort({ createdAt: -1 }) //.populate('userId', 'name email');
         const ordersWithUserDetails = await Promise.all(
             orders.map(async (order) => {
@@ -31,7 +31,7 @@ async function getAllOrder(req,res,next){
         
         res.status(201).json({orders:ordersWithUserDetails,sucess:true});
     }catch(err){
-        console.log('error in getting')
+        // console.log('error in getting')
         return res.status(500).json({ success: false, message: "An error occurred in getting order", error: err.message });
     }
 }
@@ -50,25 +50,20 @@ async function updateOrder(req,res,next){
 }
 async function updateOrder(req, res, next) {
   const { orderId, itemId, status } = req.body;
-  console.log(req.body);
   
   try {
-    // Find the order by ID
     const order = await Order.findOne({ _id: orderId });
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    // Find the specific item in the orderItems array
     const item = order.orderItems.find((item) => item._id.toString() === itemId);
     if (!item) {
       return res.status(404).json({ success: false, message: "Item not found in order" });
     }
 
-    // Update the status of the item
     item.status = status;
 
-    // Save the entire order
     await order.save();
 
     res.status(200).json({ success: true, message: "Order item updated successfully" });
@@ -79,8 +74,8 @@ async function updateOrder(req, res, next) {
 
 //users
 async function getOrder(req,res,next){
-    if(!req.session || !req.session.user) {return res.json({success:false,message:'login plz'})};
-    const userId = req.session.user.userId;
+    if(!req.user) {return res.json({success:false})};
+    const {userId} = req.user;
       try{
         const savedOrder = await Order.find({userId});
         const orderDetails = [];
@@ -105,8 +100,8 @@ async function getOrder(req,res,next){
 }
 
 async function addOrder(req,res,next){
-    if(!req.session || !req.session.user) {return res.json({success:false})};
-    const userId = req.session.user.userId;
+    if(!req.user) {return res.json({success:false})};
+    const {userId} = req.user;
     const {shippingInfo , addressId, orderItems,paymentInfo,itemsPrice,taxPrice, shippingPrice,totalPrice,} = req.body;
     try{
         const paidAt = new Date();

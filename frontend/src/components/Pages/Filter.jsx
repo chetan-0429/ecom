@@ -38,8 +38,6 @@ function Filter() {
     const params = new URLSearchParams(location.search);
     params.set('price[gte]', minPrice);
     params.set('price[lte]', maxPrice);
-    // console.log('params is ::',params)
-    // console.log('location is ::',location)
     navigate(`${location.pathname}?${params.toString()}`);
 
 
@@ -82,4 +80,3 @@ function Filter() {
 export default Filter;
 
 
-// import ReactSlider from 'react-slider';

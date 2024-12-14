@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import {addAddress} from '../../store/addressSlice'
+import {addAddress, fetchAddress,selectAddress} from '../../store/addressSlice'
 
- function AddressForm({setNewAddress}){
+import {toast,ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+import api from '../../api';
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+ function AddressForm({setNewAddress,setIsChecked,setAddressId,setAddressDone}){
 
   const [formData, setFormData] = useState({
     address: '',
@@ -26,25 +30,39 @@ import {addAddress} from '../../store/addressSlice'
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form data submitted:', formData);
     async function addAddressForm() {
         try{
-            const response = await axios.post('/api/v1/shipping/add', formData);
-            console.log('AddressForm data: ' ,response.data);
+            const response = await api.post(`${apiUrl}/shipping/add`, formData);
+
             if(response.data.success){
               const {newAddress} = response.data;
               dispatch(addAddress(newAddress))
-            alert('AddressForm details added successfully');
+              dispatch(selectAddress(newAddress));
+              setAddressId(newAddress._id)
+              setAddressDone(true)
+              toast.success('New Address is added', {
+                position: "bottom-center",
+                autoClose: 2000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+              setIsChecked(false)
+              setNewAddress(null)
             }
         }catch(err){
             console.log('AddressForm error in submit  ');
         }
     }
     addAddressForm();
-    setNewAddress(null);
+    // setNewAddress(null);
+    // setIsChecked(false);
   };
 
   return (
+    <>
     <div className="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-md mt-10">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">AddressForm Address</h1>
       <form onSubmit={handleSubmit}>
@@ -58,7 +76,7 @@ import {addAddress} from '../../store/addressSlice'
             onChange={handleChange}
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
+            />
         </div>
 
         <div className="mb-4">
@@ -110,7 +128,7 @@ import {addAddress} from '../../store/addressSlice'
             onChange={handleChange}
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
+            />
         </div>
 
         <div className="mb-4">
@@ -123,20 +141,23 @@ import {addAddress} from '../../store/addressSlice'
             onChange={handleChange}
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
+            />
         </div>
 
         <div className="mt-6">
           <button
             type="submit"
             className="w-full px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
+            >
             Submit
           </button>
         </div>
       </form>
     </div>
+    <ToastContainer />
+  </>
   );
 };
 
 export default AddressForm;
+

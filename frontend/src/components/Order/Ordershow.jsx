@@ -15,18 +15,26 @@ function Ordershow() {
 
   return (
     <div className="container mx-auto p-6">
+      
+{orderDetails.length === 0 && (
+  <div className="flex items-center justify-center h-48 bg-gray-100 rounded-lg shadow-md text-center text-gray-600">
+    <div>
+      <h2 className="text-xl font-semibold">No Orders Placed</h2>
+      <p className="mt-2">It seems you haven't placed any orders yet. Start shopping now!</p>
+    </div>
+  </div>
+)}
       {orderDetails.map((order) => (
         <div key={order.id} className="bg-white shadow-md rounded-lg  mb-2">
           <div className="order-items mb-4 ">
             {order.orderItems.map((product) => (
               <div key={`${order.id}-${product._id}`} className="product-item border-b border-gray-200 pb-4 mb-4 last:mb-0 last:border-b-0 w-4/5 "  onClick={(e)=>{handleClick(e,order.id,product._id,product.productId)}}>
-                <p>product Id: {product.productId}</p>
                 <div className='flex justify-evenly '>
                    <img src={product.image} className='h-28' alt="" />
                 <h4 className="text-md font-semibold text-gray-800">{product.name}</h4>
-                <p className="text-sm text-gray-600">Price: ${product.price.toFixed(2)}</p>
+                <p className="text-sm text-gray-600">Price: ₹{product.price.toFixed(2)}</p>
                 <p className="text-sm text-gray-600">Quantity: {product.quantity}</p>
-                {product.status == 'processing' && <p className="text-sm text-gray-600 mb-2"> {product.status}</p>}
+                {product.status == 'processing' && <p className="text-sm text-blue-300 mb-2"> {product.status}</p>}
                 {product.status == 'shipped' && <p className="text-sm text-yellow-700 mb-2"> {product.status}</p>}
                 {product.status === 'delivered' && <p className="text-sm mb-2 text-green-500"> {product.status}</p>}
   

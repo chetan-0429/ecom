@@ -1,8 +1,8 @@
 const Cart = require('../models/cartModel');
 
 async function cartItems(req,res,next){
-    if(!req.session || !req.session.user) return res.status(200).json({status:false,message:'login to see cart'});
-    const userId = req.session.user.userId;
+    if(!req.user) return res.status(200).json({status:false,message:'login to see cart'});
+    const {userId} = req.user;
     try{
         const cart = await Cart.findOne({userId});
         if(cart){
@@ -16,12 +16,10 @@ async function cartItems(req,res,next){
     }
 }
 
-
 async function addToCart(req,res,next) {
 const { productId, quantity} = req.body;
-if(!req.session || !req.session.user) return res.status(400).json({status:false,message:'login plz'});
-const userId = req.session.user.userId;
-
+if(!req.user) return res.status(400).json({status:false,message:'login plz'});
+const {userId} = req.user;
     try{
         const cart = await Cart.findOne({ userId });
         if(cart) {
@@ -51,10 +49,10 @@ const userId = req.session.user.userId;
 
     async function countCartItems(req,res,next){
        
-        if(!req.session || !req.session.user) return res.status(200).json({status:true, productCount:0});
+        if(!req.user) return res.status(200).json({status:true, productCount:0});
       
         try{
-            const userId = req.session.user.userId;
+            const {userId} = req.user;
             const cart = await Cart.findOne({ userId });
 
             if(!cart) {
@@ -65,22 +63,20 @@ const userId = req.session.user.userId;
 
         }catch(err){
             return res.status(400).json({status:false, productCount:0});
-       
         }
     }
     async function toatalCartItems(req,res,next){
 
-        if(!req.session || !req.session.user) return res.status(200).json({status:true,products:[],productCount:0,message:'login please'});
+        if(!req.user) return res.status(200).json({status:true,products:[],productCount:0,message:'login please'});
 
         try{
-            const userId = req.session.user.userId;
+            const {userId} = req.user;
             const cart = await Cart.findOne({ userId });
             if(!cart) {
                 return res.status(200).json({status:true,productCount:0,products:[]})
             }
             const productLength = cart.products.length;
             const products = cart.products.map((pro)=>{return {productId: pro.productId,quantity:pro.quantity}});
-            // console.log('products',products)
             return res.status(200).json({status:true,productCount:productLength,products:products})
 
         }catch(err){
@@ -92,19 +88,17 @@ const userId = req.session.user.userId;
 
     //remove from cart:
     async function removeFromCart(req,res,next){
-        if(!req.session || !req.session.user){
+        if(!req.user){
             return res.json({staus:false,message:'login please'});
         }
-        console.log(req.params.id);
         const productId = req.params.id;
-        const userId = req.session.user.userId;
+        const {userId} = req.user;
         try {
             const cart =await Cart.findOne({userId});
             if(!cart){
                 return res.json({staus:true,message:'No Cart'});
             }
            const result = await cart.updateOne( { $pull: { products: { productId } } })
-           console.log('updated');
             if (result.modifiedCount === 0) {
                 return res.status(404).json({ message: 'Product not found in cart' });
             }
@@ -117,12 +111,11 @@ const userId = req.session.user.userId;
 
     //decrease quantity
     async function quantityDecrease(req,res,next){
-        if(!req.session || !req.session.user){
+        if(!req.user){
             return res.json({staus:false,message:'login please'});
         }
-        console.log(req.params.id);
         const productId = req.params.id;
-        const userId = req.session.user.userId;
+        const {userId} = req.user;
         try {
             const cart =await Cart.findOne({userId});
             if(!cart){
@@ -139,4 +132,18 @@ const userId = req.session.user.userId;
         }
     }
 
-    module.exports = {addToCart,countCartItems,cartItems,toatalCartItems,removeFromCart,quantityDecrease};
+    //clear cart
+    async function clearCart(req,res){
+        if(!req.user){
+            return res.json({status:false,message:'login please'});
+        }
+        const {userId} = req.user;
+        try{
+           const result = await Cart.deleteMany({userId});
+           res.json({success:true,message:'removed successfully'})
+        }catch(err){
+            res.json({success:false,message:'removed successfully'})
+        }
+    }
+
+    module.exports = {addToCart,countCartItems,cartItems,toatalCartItems,removeFromCart,quantityDecrease,clearCart};

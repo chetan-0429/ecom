@@ -1,4 +1,3 @@
-// import React, { useState } from 'react'
 import Shipping from './Shipping'
 import OrderSummary from './OrderSummary'
 import Payment from './Payment'
@@ -9,9 +8,12 @@ import tick from '../../images/tick.png'
 import { useDispatch,useSelector } from 'react-redux'
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import api from '../../api'
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 
 const CheckoutPage = () => {
-  const [currentSection, setCurrentSection] = useState('address');
+  const [currentSection, setCurrentSection] = useState('orderSummary');
   const [addressId,setAddressId] = useState(null);
   const [paymentDetails,setIsPaymetDetails] = useState([]);
   const [addressDone,setAddressDone] = useState(false);
@@ -21,9 +23,9 @@ const CheckoutPage = () => {
 
   const {products} = useSelector(state => state.cart);
   const {selectedAddress} = useSelector(state=>state.address)
-  console.log('selected Address',selectedAddress)
 
   const handleSectionChange = (section) => {
+    setOrderSummaryDone(true);
     setCurrentSection(section);
   };
 function handleSubmit(e){
@@ -37,8 +39,7 @@ function handleSubmit(e){
     })
     
     try{
-     const response = await axios.post('/api/v1/order/add',{addressId:selectedAddress._id,itemsPrice,orderItems});
-      console.log('ordered sussessfully : ', response.data)
+     const response = await api.post(`${apiUrl}/order/add`,{addressId:selectedAddress._id,itemsPrice,orderItems});
       setIsOrderSuccess(true)
     }catch(err){
       console.log('errr in order')
@@ -60,6 +61,15 @@ if(isOrderSuccess){
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-md">
         <div className="border-b border-gray-200">
           <div className="flex justify-between px-4 py-2 bg-gray-50">
+
+          <button
+              onClick={() => handleSectionChange('orderSummary')}
+              className={`py-2 px-4 ${currentSection === 'orderSummary' ? 'bg-indigo-600 text-white' : 'text-gray-600'}` } >
+              Order Summary
+              {orderSummaryDone ? <img src={tick} className='h-5'/>: null}
+            </button>
+
+
             <button
               onClick={() => handleSectionChange('address')}
               className={`py-2 px-4 rounded-t-lg ${currentSection === 'address' ? 'bg-indigo-600 text-white' : 'text-gray-600'}`}
@@ -67,26 +77,19 @@ if(isOrderSuccess){
               Address
             {addressDone ? <img src={tick} className='h-5'/>: null}
             </button>
-            <button
-              onClick={() => handleSectionChange('orderSummary')}
-              className={`py-2 px-4 ${currentSection === 'orderSummary' ? 'bg-indigo-600 text-white' : 'text-gray-600'}`}
-            >
-              Order Summary
-              {orderSummaryDone ? <img src={tick} className='h-5'/>: null}
-            </button>
+            
             <button
               onClick={() => handleSectionChange('payment')}
-              className={`py-2 px-4 rounded-tr-lg ${currentSection === 'payment' ? 'bg-indigo-600 text-white' : 'text-gray-600'}`}
+              className={`py-2 px-4 rounded-tr-lg ${currentSection === 'payment' ? 'bg-indigo-600 text-white' : 'text-gray-600'}  ${!addressDone ? 'cursor-not-allowed opacity-50' : 'hover:cursor-pointer'}` }
             >
               Payment
             </button>
           </div>
         </div>
     
-        {currentSection === 'address' && <Shipping setAddressId = {setAddressId} addressId={addressId} changeCurrentSection={setCurrentSection} setAddressDone={setAddressDone}/>}
         {currentSection === 'orderSummary' && <OrderSummary changeCurrentSection={setCurrentSection} setOrderSummaryDone={setOrderSummaryDone}/>}
+        {currentSection === 'address' && <Shipping setAddressId = {setAddressId} addressId={addressId} changeCurrentSection={setCurrentSection} addressDone={addressDone} setAddressDone={setAddressDone}/>}
         {currentSection === 'payment' && <Payment/>}
-        {/* {currentSection === 'payment' && <button className='bg-blue-400' onClick={handleSubmit}>confirm order</button>} */}
         
 
       </div>

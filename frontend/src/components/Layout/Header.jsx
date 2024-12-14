@@ -7,7 +7,7 @@ import { fetchCartProducts } from '../../store/cartSlice';
 import ProductHeader from './ProductHeader';
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const auth = useSelector(state => state.auth);
+  const {isAuthenticated} = useSelector(state => state.auth);
   const productCount = useSelector(state => state.cart.productCount);
 
 const navigate = useNavigate();
@@ -47,14 +47,14 @@ const navigate = useNavigate();
             <img src={`${profile_icon}`} className='w-7 rounded-full' alt="" />
             </div>
             <ul className="hidden group-hover:block absolute top-full right-0 bg-white shadow-md py-2 w-48 text-gray-600">
-              <li><Link to="/settings" className="block px-4 py-2 hover:bg-gray-100">My profile</Link></li>
+              <li><Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">My profile</Link></li>
               <li><Link to="/order" className="block px-4 py-2 hover:bg-gray-100">Orders</Link></li>
-              <li><Link to="/wishlist" className="block px-4 py-2 hover:bg-gray-100">Wishlist</Link></li>
+              {/* <li><Link to="/wishlist" className="block px-4 py-2 hover:bg-gray-100">Wishlist</Link></li> */}
               <li><Link to="/logout" className="block px-4 py-2 hover:bg-gray-100">Logout</Link></li>
             </ul>
           </li>
             <li><Link to="/" className="hover:underline">Home</Link></li>
-            {auth.status ? 
+            {isAuthenticated ? 
             <li><Link to="/logout" className="hover:underline">Logout</Link></li>
             : 
             <li><Link to="/login" className="hover:underline">Login</Link></li>
@@ -62,8 +62,12 @@ const navigate = useNavigate();
           <li><Link to='/cart'>
               <div className=' relative'>
               <img src={cartIcon2} alt="" className='w-9 h-8' />
-              <div className='absolute top-0 right-0 bg-red-500 text-white rounded-full px-1 text-xs'>{productCount}</div>
-              </div>
+              {
+                isAuthenticated ? <div className='absolute top-0 right-0 bg-red-500 text-white rounded-full px-1 text-xs'>{productCount}</div>
+                 :
+                 <div className='absolute top-0 right-0 bg-red-500 text-white rounded-full px-1 text-xs'>0</div> 
+              }
+               </div>
           </Link></li>
           
         </ul>

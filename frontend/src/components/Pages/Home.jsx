@@ -3,9 +3,10 @@ import axios from 'axios';
 import Productcard from './Pro.jsx';
 import { useSelector } from 'react-redux';
 import ProductHeader from './ProductHeader.jsx';
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Home() {
-    const user = useSelector((state) => (state.auth));
+    const {isAuthenticated} = useSelector((state) => (state.auth));
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -17,7 +18,7 @@ function Home() {
 
     const fetchApi = async (page) => {
         setError(false);
-        const api = `/api/v1/products/products?page=${page}`;
+        const api = `${apiUrl}/products/products?page=${page}`;
         try {
             setLoading(true);
             const res = await axios.get(api);

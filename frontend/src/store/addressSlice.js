@@ -1,15 +1,18 @@
 import {createSlice,createAsyncThunk} from "@reduxjs/toolkit"
 import axios from "axios";
+import api from '../api'
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 
 export const fetchAddress = createAsyncThunk(
     'address/fetchAddress',
     async(_, thunkAPI) =>{
-        // console.log('called feth')
         try{
-        const response = await axios.get('/api/v1/shipping/address');
+        const response = await api.get(`${apiUrl}/shipping/address`);
+        if(response.data.success==false){
+            return {shippingInfo:[],shippingId:null};
+        }
         const {shippingInfo,status,shippingId} = response.data;
-        // console.log(shippingInfo)
 
         return {shippingInfo,shippingId};
 
@@ -34,7 +37,6 @@ export const addressSlice = createSlice({
     initialState,
     reducers:{
         addAddress(state,action){
-            // console.log('add address called reducer')
             state.savedAddress.push(action.payload)
             },
         removeAddress(state,action){
@@ -42,7 +44,6 @@ export const addressSlice = createSlice({
              },
         selectAddress(state,action){
             state.selectedAddress = action.payload
-            // console.log('selected address : ',state.selectedAddress)
             }
         
     },

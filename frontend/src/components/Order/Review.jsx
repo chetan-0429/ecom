@@ -5,6 +5,8 @@ import { FaStar } from "react-icons/fa";
 import axios from 'axios';
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../api';
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Review = () => {
     const [rating, setRating] = useState(Number(0));
@@ -19,9 +21,7 @@ const Review = () => {
       console.log('in the review getting')
       async function getProductReview (){
         try{
-          console.log('pd',productId)
-        const response = await axios.get(`/api/v1/products/get_review?productId=${productId}`);
-        console.log(response.data)
+        const response = await api.get(`${apiUrl}/products/get_review?productId=${productId}`);
         if(response.data.success && response.data.review){
         const currentReview = response.data.review;
         setRating(currentReview.rating);
@@ -35,9 +35,7 @@ const Review = () => {
     },[])
     const fetchReview = async ()=>{
         try{
-            // console.log("abc: ", productId,rating,comment)
-            const response = await axios.post('/api/v1/products/review',{productId:productId,rating:rating,comment:comment});
-          //  console.log('review:success',response.data);
+            const response = await api.post(`${apiUrl}/products/review`,{productId:productId,rating:rating,comment:comment});
            toast.success("Thanks for your review", {
             position: "top-center",
             autoClose: 2000,

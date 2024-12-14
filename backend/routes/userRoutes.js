@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/add',createUser);
-router.get('/user',getUser);
 router.post('/login',login);
 router.get('/logout',logout);
 router.get('/session',checkForSession)

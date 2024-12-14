@@ -5,6 +5,7 @@ import Filter from './Filter';
 import Brand from './Brand';
 import { useLocation ,useNavigate} from 'react-router-dom';
 import Sort from './Sort';
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 
 const buildQueryString = (params) => {
@@ -19,33 +20,27 @@ function Search() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     
-    // const keyword = queryParams.get('keyword');
-    // console.log('keywordd: ',keyword)
     
     const paramsObject = Object.fromEntries(queryParams.entries());
-    console.log('paramsObj: ',paramsObject)
-    // const apiUrl = `api/v1/products/products?${buildQueryString(paramsObject)}`;
     const searchedParams = location.search;
-    const apiUrl = `api/v1/products/products${searchedParams}`;
-    console.log(apiUrl)
+    const apiurl = `${apiUrl}/products/products${searchedParams}`;
 
     useEffect(()=>{
           setLoading(true)
-          axios.get(apiUrl)
+          axios.get(apiurl)
           .then((res)=> {
             setProducts(res.data.products)
             console.log(res.data.products)
           })
           .catch((err)=>console.log('error in fetching products',err))
           .finally(()=>setLoading(false))
-      },[apiUrl])
+      },[apiurl])
   
 const navigate = useNavigate();
 
      function handlePrevPage(){
         const params = new URLSearchParams(location.search);
         const currPage = Number(params.get('page'));
-        console.log('cp : ',currPage)
         if(currPage > 1){
           params.set('page',currPage-1)
           navigate(`${location.pathname}?${params.toString()}`);
@@ -54,12 +49,9 @@ const navigate = useNavigate();
      function handleNextPage(){
        const params = new URLSearchParams(location.search);
        const currPage = Number(params.get('page'));
-       console.log('cp : ',currPage)
        if(currPage == 0) params.set('page',2)
        else params.set('page',currPage+1)
        navigate(`${location.pathname}?${params.toString()}`);
-
-      // navigate(`${location.search}&page=${page}`)
      }
      function sortLowToHigh(){
       setProducts(product =>{

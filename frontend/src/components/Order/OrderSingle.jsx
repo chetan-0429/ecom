@@ -46,16 +46,22 @@ function OrderSingle() {
               <div className='flex items-center justify-between w-80'>
               <div className="md:w-2/3 p-4 flex flex-col justify-center">
                 <h3 className="text-lg font-medium text-gray-700 mb-3">{product.name}</h3>
-                <p className="text-sm text-gray-600 mb-2">Price: ${product.price.toFixed(2)}</p>
+                <p className="text-sm text-gray-600 mb-2">Price: ₹{product.price.toFixed(2)}</p>
                 <p className="text-sm text-gray-600 mb-2">Quantity: {product.quantity}</p>
-                {product.status == 'processing' && <p className="text-sm text-gray-600 mb-2"> {product.status}</p>}
+                {product.status == 'processing' && <p className="text-sm text-blue-400 mb-2"> {product.status}</p>}
                 {product.status == 'shipped' && <p className="text-sm text-yellow-700 mb-2"> {product.status}</p>}
                 {product.status === 'delivered' && <p className="text-sm mb-2 text-green-500"> {product.status}</p>}
               </div>
-              <div className=''>
+              {
+                product.status == 'delivered' ?      <div className=''>
                 <button className='text-blue-400' onClick={((e)=>handleClickReview(e,product._id))}>Rate & Review</button>
                 <button className='text-blue-400'>Return</button>
               </div>
+               :
+               <div>
+                </div>
+              }
+         
               </div>
             </div>
     

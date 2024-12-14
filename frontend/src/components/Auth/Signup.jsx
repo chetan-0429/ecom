@@ -1,10 +1,12 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import {useDispatch,useSelector} from 'react-redux'
-import {login,logout} from '../../store/authSlice'
+import {loginUser,logout} from '../../store/authSlice'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {Link,useNavigate} from 'react-router-dom'
+import {Link,useNavigate,Navigate} from 'react-router-dom'
+import api from '../../api'
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Signup() {
     const [email,setEmail] = useState("");
@@ -12,38 +14,51 @@ function Signup() {
     const [success,setSuccess] = useState(false);
     const [error,setError] = useState(false)
 
+    
+    const { isAuthenticated } = useSelector((state) => state.auth);
+
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     
     async function addUser(){
         try{
             console.log({email,password})
-            const response = await axios.post('/api/v1/users/add',{email,password});
-            const user = response.data.user;
-            console.log('user created:  ',user)
-            dispatch(login(user));
-            setSuccess(true);
+            const response = await api.post(`${apiUrl}/users/add`,{email,password});
+            console.log('singupp::::::::',response.data)
+            if(response.data.success){
+              toast.success("user sucessfully created!", {
+                position: "bottom-center",
+                autoClose: 2000, 
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+            dispatch(loginUser({ email, password }))
+            .then(() => {
+                toast.success('Login successful!');
+            })
+            .catch(() => {
+                toast.error('Login failed. Please check your credentials.');
+            });
+          }
+          setSuccess(true);
             setError(false);
         }catch(err){
             setError(true);
             setSuccess(false)
         }
     }
-    const navigate = useNavigate();
 
     function handleSubmit(e){
         e.preventDefault();
-        console.log(email,password);
         addUser();
-        toast.success("user sucessfully created!", {
-            position: "bottom-center",
-            autoClose: 2000, 
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
     }
+
+    if (isAuthenticated) {
+      return <Navigate to="/" />;
+  }
     return (
         <>
         <ToastContainer />
@@ -89,7 +104,7 @@ function Signup() {
                     </button>
                 </form>
                 {success && <h4>successfully created</h4> }
-                {error && <h4>error in creating</h4> }
+                {error && <h4>user already exist or error in creating</h4> }
                 <p className="mt-4 text-center text-sm text-gray-600">
                     Already have an account?{' '}
                     <a href="/login" className="text-blue-500 hover:text-blue-600">
@@ -103,3 +118,4 @@ function Signup() {
 }
 
 export default Signup;
+

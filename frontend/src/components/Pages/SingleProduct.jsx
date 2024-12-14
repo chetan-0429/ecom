@@ -9,8 +9,11 @@ import { fetchCartProducts } from '../../store/cartSlice';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../api';
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 function SingleProduct() {
+    const { isAuthenticated } = useSelector((state) => state.auth);
     const [loading, setLoading] = useState(true);
     const { id } = useParams();
     const [product, setProduct] = useState({});
@@ -21,7 +24,7 @@ function SingleProduct() {
         setErr(false);
         try {
             setLoading(true);
-            const res = await axios.get(`/api/v1/products/product/${id}`);
+            const res = await api.get(`${apiUrl}/products/product/${id}`);
             if (res) setProduct(res.data);
         } catch (err) {
             setErr(true);
@@ -38,7 +41,7 @@ function SingleProduct() {
     const addToCart = () => {
         async function addInCart() {
             try {
-                const res = await axios.post(`/api/v1/cart/add`, { productId: id, quantity: 1 });
+                const res = await api.post(`${apiUrl}/cart/add`, { productId: id, quantity: 1 });
                 dispatch(addProductToCart({ ...product, quantity: 1 }));
                 toast.success("Item added to cart!", {
                     position: "top-center",
@@ -53,7 +56,20 @@ function SingleProduct() {
                 console.log('error in adding to cart');
             }
         }
-        if (id) addInCart();
+        if(isAuthenticated){
+            if(id) addInCart();
+        }
+        else{
+            toast.warning("Please login to add items to the cart", {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
     };
 
     const { products } = useSelector(state => state.cart);

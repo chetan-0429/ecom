@@ -1,41 +1,53 @@
 const Shipping = require('../models/shippingModel');
 
-async function addShipping(req,res,next){
-
-    if(!req.session || !req.session.user) {return res.json({success:false})};
-    const userId = req.session.user.userId;
-
-    const {address,city,state,country,pinCode,phoneNo} = req.body;
-    try{
-let newAddress = null;
-   const shipping = await Shipping.findOne({userId});
-   if(!shipping){
-    const newShipping = new Shipping({
-        userId,
-       shippingInfo: [
-            {address,city,state,country,pinCode,phoneNo}
-        ]
-     })
-     await newShipping.save();
-     newAddress = shipping.shippingInfo[0];
+async function addShipping(req, res, next) {
+    if (!req.user) {
+      return res.json({ success: false });
     }
-    else{
-        shipping.shippingInfo.push({ address,city,state,country,pinCode,phoneNo});    
+  
+    const { userId } = req.user;
+    const { address, city, state, country, pinCode, phoneNo } = req.body;
+    
+    try {
+      let newAddress = null;
+      const shipping = await Shipping.findOne({ userId });
+  
+      if (!shipping) {
+        const newShipping = new Shipping({
+          userId,
+          shippingInfo: [
+            { address, city, state, country, pinCode, phoneNo },
+          ],
+        });
+  
+        await newShipping.save();
+  
+        newAddress = newShipping.shippingInfo[0];
+      } else {
+        shipping.shippingInfo.push({ address, city, state, country, pinCode, phoneNo });
         await shipping.save();
+  
         newAddress = shipping.shippingInfo[shipping.shippingInfo.length - 1];
+      }
+  
+      return res.status(201).json({
+        success: true,
+        newAddress,
+        message: "Shipping address added successfully",
+      });
+    } catch (err) {
+      return res.status(500).json({
+        success: false,
+        message: "An error occurred",
+        error: err.message,
+      });
     }
-       return res.status(201).json({ success: true,newAddress, message: "Shipping address added successfully" });
-
-    }catch(err){
-        return res.status(500).json({ success: false, message: "An error occurred", error: err.message });
-
-    }
-}
+  }
+  
 
 async function getAddress(req,res,next) {
-    
-    if(!req.session || !req.session.user) {return res.json({success:false})};
-    const userId = req.session.user.userId;
+    if(!req.user) {return res.json({success:false})};
+    const {userId} = req.user;
 
     try{
 

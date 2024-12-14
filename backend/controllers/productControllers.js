@@ -89,7 +89,6 @@ async function updateProduct(req,res,next){
 }
 async function deleteProduct(req,res,next){
     const id = req.params.id;
-    console.log('delete id: ',id)
     if(!id) res.json({success:true,message:"not found"});
     try{
       const deleted =  await Product.deleteOne({_id:id});
@@ -120,14 +119,12 @@ async function getAllProducts(req,res,next){
             productCount,
         })
     }catch(err){
-        console.error('Error getting all products:', err);
         res.status(500).json({ message: 'Error getting all products', error: err.message});
     }
 }
 
 async function singleProduct(req,res,next){
     const id = req.params.id;
-    console.log('id:',id)
     try{
         const product = await Product.findById(id);
         if(!product){
@@ -137,7 +134,6 @@ async function singleProduct(req,res,next){
             res.status(200).json(product);
         }
     }catch(err){
-        // console.error('Error getting single product:', err);
         res.status(500).json({ message: 'Error getting product', error: err.message});
     }
 }
@@ -146,11 +142,7 @@ async function singleProduct(req,res,next){
 async function cartProducts(req, res,next){
     const { ids } = req.body;
     try {
-        const products = await Product.find({ _id: { $in: ids } }); // Adjust based on your database
-        // res.status(201).json({
-        //     success:true,
-        //     products
-        // })
+        const products = await Product.find({ _id: { $in: ids } }); 
         res.status(201).json(products)
     } catch (error) {
         res.status(500).json({ message: 'Error fetching products' });
@@ -160,9 +152,9 @@ async function cartProducts(req, res,next){
 ///add reviews:
             
 async function createProductReview(req,res) {
-        if(!req.session || !req.session.user) return res.json({success:false,message:'login for review'})
+        if(!req.user) return res.json({success:false,message:'login for review'})
+            const {userId} = req.user;
     const { rating, comment, productId } = req.body;
-    const userId = req.session.user.userId;
     try {
         const user = await User.findById(userId);
         if(!user) {res.json({success:false,message:'error in finding user'})};
@@ -175,7 +167,6 @@ async function createProductReview(req,res) {
             const totalRating = numofReviews * product.ratings;
         
             if (review) {
-                console.log('updated')
                 // Update the existing review
                 const oldRating = review.rating;
                 review.rating = rating;
@@ -204,11 +195,9 @@ async function createProductReview(req,res) {
 }
 
 async function getProductReview(req,res) {
-    if(!req.session || !req.session.user) return res.json({success:false,message:'login for review'})
+    if(!req.user) {return res.json({success:false})};
+    const {userId} = req.user;
      const { productId } = req.query;
-    console.log('pd: ',productId)
-    console.log('reqPd: ',req.query)
-    const userId = req.session.user.userId;
     try {
         const user = await User.findById(userId);
         if(!user) {res.json({success:false,message:'error in finding user'})};

@@ -5,19 +5,15 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { fetchCartProducts,removeProductFromCart,quantityDecrease,quantityIncrease } from '../../store/cartSlice';
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../api'
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 function Cart() {
 
   const [totalPrice,setTotalPrice] = useState(0);
   const {products,laoding,error,productCount} = useSelector(state => state.cart)
   const [priceInString,setPriceInString] = useState("");
 
-  
-const dispatch = useDispatch();
-
-// useEffect(()=>{
-//   dispatch(fetchCartProducts());
-//     },[dispatch]);
-
+  const dispatch = useDispatch();
 useEffect(()=>{
       let total = 0;
       products.forEach(product => {
@@ -48,8 +44,7 @@ useEffect(()=>{
 function removeFromCart(id){
   async function removeFromDb() {
     try{
-      const response =  await axios.get(`api/v1/cart/remove/${id}`);
-      // console.log('removed: ', response.data);
+      const response =  await api.get(`${apiUrl}/cart/remove/${id}`);
       dispatch(removeProductFromCart(id));
 
       toastFun('Product removed from cart');
@@ -63,8 +58,7 @@ function removeFromCart(id){
   function quantityInc(id,quantity){
     async function addInCart() {
       try{
-          const res = await axios.post(`/api/v1/cart/add`,{productId:id,quantity:1});
-          // console.log('item is added to cart:',res.data);
+          const res = await api.post(`${apiUrl}/cart/add`,{productId:id,quantity:1});
           dispatch(quantityIncrease(id));
           
         toastFun(`You've changed the QUANTITY to  '${quantity+1}'`);
@@ -78,11 +72,9 @@ function removeFromCart(id){
 
   //quantity decreasing
   function quantityDec(id,quantity){
-    // console.log('dec clicked',quantity)
     async function dec() {
       try{
-        console.log('int he dlfads')
-          const res = await axios.get(`/api/v1/cart/quantitydec/${id}`);
+          const res = await api.get(`${apiUrl}/cart/quantitydec/${id}`);
           dispatch(quantityDecrease(id));
           toastFun(`You've changed the QUANTITY to  '${quantity-1}'`);
 
@@ -105,9 +97,7 @@ function handleOrder(){
 
   return (
     <>
-  
-    <h1>cart</h1>
-    <div className="p-4 flex justify-between w-full">
+      <div className="p-4 flex justify-between w-full">
   <div className="w-4/5">
     {products.length > 0 ? (
       products.map((product) => (
@@ -151,15 +141,15 @@ function handleOrder(){
     </div>
     <div className='flex justify-between mt-3' >
        <p className="">Discount</p>
-       <p className=" text-green-500">-₹400</p>
+       <p className=" text-green-500">-₹0</p>
     </div>
     <div className='flex justify-between mt-3' >
        <p className="">Buy more & save more</p>
-       <p className=" text-green-500">-₹30</p>
+       <p className=" text-green-500">-₹0</p>
     </div>
     <div className='flex justify-between mt-3' >
        <p className="">coupons for you</p>
-       <p className=" text-green-500">-₹1149</p>
+       <p className=" text-green-500">-₹0</p>
     </div>
     <div className='flex justify-between mt-3' >
        <p className="">Delivery Charges</p>
@@ -170,7 +160,7 @@ function handleOrder(){
        <p className="text-xl font-bold">₹{priceInString}</p>
     </div>
     <div className='flex justify-between mt-5' >
-    <p className=" text-green-500">You will save ₹42,543 on this order</p>
+    <p className=" text-green-500">You will save ₹0 on this order</p>
     </div>
   <div>
     <button className='bg-orange-400 text-white h-10 w-44' onClick={handleOrder}>place order</button>

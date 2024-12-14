@@ -8,7 +8,6 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(cors());
 
-
 const connectDb = require('./database')
 connectDb();
 
@@ -16,21 +15,19 @@ app.use(session({
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: true
-}));
+})); 
 const Order = require('./models/orderModel')
 
-
-const endpointSecret = "whsec_af8e21520e62ec15df0404afb5785fb0c99d96b827bea145eca03c4963bafdee";
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 app.post('/api/v1/webhook', express.raw({type: 'application/json'}), async (req, res) => {
-  console.log('called for webhook')
+  // console.log('called for webhook')
   const sig = req.headers['stripe-signature'];
   let event;
-
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
-    console.log(`⚠️  Webhook signature verification failed.`, err.message);
+    // console.log(`⚠️  Webhook signature verification failed.`, err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
@@ -38,8 +35,6 @@ app.post('/api/v1/webhook', express.raw({type: 'application/json'}), async (req,
   switch (event.type) {
     case 'checkout.session.completed':
       const session = event.data.object;
-
-   
       await Order.findOneAndUpdate(
         {'paymentInfo.id': session.id},
         {'paymentInfo.status': 'succeeded', 'orderStatus': 'completed'}
@@ -48,9 +43,8 @@ app.post('/api/v1/webhook', express.raw({type: 'application/json'}), async (req,
       break;
     
     default:
-      console.log(`Unhandled event type ${event.type}`);
+      // console.log(`Unhandled event type ${event.type}`);
   }
-console.log('successfully webhook')
   res.json({received: true});
 });
 
@@ -58,24 +52,28 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
+const {authentication} = require('./middleware/authMiddleware')
+
 const productRouter = require('./routes/productRoutes')
 const userRouter = require('./routes/userRoutes')
 const cartRouter = require('./routes/cartRoutes')
 const shippingRouter = require('./routes/shippingRoutes')
 const orderRouter = require('./routes/orderRoutes');
-// const session = require('express-session');
+
 app.use('/api/v1/products/',productRouter);
 app.use('/api/v1/users/',userRouter);
-app.use('/api/v1/cart/',cartRouter);
-app.use('/api/v1/shipping/',shippingRouter);
-app.use('/api/v1/order/',orderRouter);
+app.use('/api/v1/cart/',authentication,cartRouter);
+app.use('/api/v1/shipping/',authentication,shippingRouter);
+app.use('/api/v1/order/',authentication,orderRouter);
 
+app.get('/api/v1/test',authentication,(req,res)=>{
+  res.json({success:true,message:'tested done'})
+})
 
-app.post('/api/v1/pay',async(req,res)=>{
-    if(!req.session || !req.session.user) return res.json({status:'false',message:'login please'});
-    const userId = req.session.user.userId;
+app.post('/api/v1/pay',authentication,async(req,res)=>{
+    if(!req.user) return res.json({status:'false',message:'login please'});
+    const {userId} = req.user;
     const {products,shippingAddress} = req.body;
-    // console.log(products)
     try{
         const lineItems = products.map((product)=>({
         price_data:{
@@ -92,12 +90,9 @@ app.post('/api/v1/pay',async(req,res)=>{
         payment_method_types: ['card'],
         line_items: lineItems,
         mode: 'payment',
-        success_url:'http://localhost:5173/ordersuccess',
-        cancel_url: 'http://localhost:5173/ordercancel',
-    })
-  //   await stripe.checkout.sessions.update(session.id, {
-  //     success_url: `http://localhost:5173/orderresponse?reference_id=${session.id}`
-  // });
+        success_url: `${process.env.FRONTEND_URL}/ordersuccess?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.FRONTEND_URL}/checkout/cancel`,
+      })
 
     //saving order
     const order = new Order({
@@ -133,8 +128,24 @@ app.get('/abc',(req,res)=>{
     res.json({success:true});
 })
 
+app.get('/api/v1/verify-session', async (req, res) => {
+  const sessionId = req.query.session_id;
+  // console.log('session id: ',sessionId)
+
+  if (!sessionId) {
+    return res.status(400).json({ error: 'Session ID is required' });
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    res.json({ session });
+  } catch (error) {
+    console.error('Error retrieving session:', error);
+    res.status(500).json({ error: 'Failed to retrieve session' });
+  }
+});
+
 const port = process.env.PORT;
-console.log(port)
 app.listen(port,()=>{
     console.log('server started');
 })
