@@ -145,6 +145,9 @@ app.get('/api/v1/verify-session', async (req, res) => {
   }
 });
 
+app.get('/test',(req,res)=>{
+  res.json('testing....');
+})
 const port = process.env.PORT;
 app.listen(port,()=>{
     console.log('server started');
