@@ -55,6 +55,7 @@ import checkTokenExpiration from './checkTokenExpiry';
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 import api from './api';
 import Profile from './components/Auth/Profile';
+import Ordercancel from './components/Pages/Ordercancel';
 
 function App() {
   const { isAuthenticated,user } = useSelector((state) => state.auth);
@@ -98,6 +99,7 @@ function App() {
           <Route path="/review/:productId/write-review" element={<ProtectedRoute element={<Review />} />} />
           <Route path="/checkout/shipping" element={<ProtectedRoute element={<Shipping />} />} />
           <Route path="/ordersuccess" element={<ProtectedRoute element={<Ordersuccess />} />} />
+          <Route path="/ordercancel" element={<ProtectedRoute element={<Ordercancel />} />} />
         </Route>
       </Routes>
     </BrowserRouter>
