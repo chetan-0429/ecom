@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Sort({ sortLowToHigh, sortHighToLow }) {
+function Sort({ sortLowToHigh, sortHighToLow}) {
   return (
     <div className="">
       <div>

@@ -5,18 +5,15 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { clearCart } from '../../store/cartSlice';
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
-import axios from 'axios';
 
 function Logout() {
    const navigate = useNavigate();
-const dispatch = useDispatch();
-async function userLogout() {
+   const dispatch = useDispatch();
+    async function userLogout() {
     try{
-
          dispatch(logout());
          dispatch(clearCart());
          navigate('/login');
-    
     
     }catch(err){
         console.log('error in destroying');
@@ -26,8 +23,9 @@ function handleSubmit(e){
     e.preventDefault();
     userLogout();
 }
-
-
+function handleCancel(){
+    navigate(-1);
+}
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
@@ -38,7 +36,8 @@ function handleSubmit(e){
                     onClick={handleSubmit}>
                         Logout
                     </button>
-                    <button className="bg-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    <button className="bg-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                   onClick={handleCancel} >
                         Cancel
                     </button>
                 </div>

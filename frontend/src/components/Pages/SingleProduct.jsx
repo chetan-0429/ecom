@@ -153,11 +153,11 @@ function SingleProduct() {
                                     Add to Cart
                                 </button>
                             )}
-                            <button
+                            {/* <button
                                 className="px-8 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition-colors"
                             >
                                 Buy Now
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </div>

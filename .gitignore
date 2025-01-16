@@ -3,3 +3,5 @@ ngork
 postcss.config.js
 run stripe cle.txt
 stripe.exe
+# Local Netlify folder
+.netlify

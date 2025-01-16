@@ -6,10 +6,10 @@ const stripeKey = process.env.STRIPE_SECRET_KEY;
 const stripe = require('stripe')(stripeKey);
 const bodyParser = require('body-parser');
 const app = express();
-app.use(cors());
+app.use(cors({origin:process.env.FRONTEND_URL}));
 
 const connectDb = require('./database')
-connectDb();
+connectDb(); 
 
 app.use(session({
     secret: 'your_secret_key',

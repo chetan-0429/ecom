@@ -27,7 +27,6 @@ function filter(query){
             filterOnQuery[key] = { $regex: filterOnQuery[key], $options: 'i' }; 
         }
         else if (Array.isArray(filterOnQuery[key])) {
-            // Properly handle multiple values for the same key
             filterOnQuery[key] = { $in: filterOnQuery[key].map(value => new RegExp(value, 'i')) };
         }
     }
@@ -101,7 +100,7 @@ async function deleteProduct(req,res,next){
 async function getAllProducts(req,res,next){
     try{
         const productCount = await Product.countDocuments();
-        let resultPerPage = 5;
+        let resultPerPage = 8;
         if(req.session && req.session.user && req.session.user.role=='admin') resultPerPage = 15;
         const query= req.query;
         let queryObject = Product.find();
@@ -112,7 +111,6 @@ async function getAllProducts(req,res,next){
         queryObject.limit(resultPerPage).skip(pagination(resultPerPage,query));
 
         const products = await queryObject.exec();
-
         res.status(201).json({
             success:true,
             products,
@@ -167,12 +165,9 @@ async function createProductReview(req,res) {
             const totalRating = numofReviews * product.ratings;
         
             if (review) {
-                // Update the existing review
                 const oldRating = review.rating;
                 review.rating = rating;
                 review.comment = comment;
-            
-                // Recalculate the product rating
                 product.ratings = Number(((totalRating - oldRating + Number(rating)) / numofReviews)).toFixed(1);
             }
             else{

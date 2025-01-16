@@ -1,35 +1,3 @@
-// import { useEffect, useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-// import React from 'react'
-// import axios from 'axios'
-// import Header from './components/Layout/Header'
-// import Layout from './components/Layout'
-// import Home from './components/Pages/Home'
-// import { BrowserRouter,Navigate,Route, Routes } from 'react-router-dom'
-// import { useDispatch,useSelector } from 'react-redux'
-// import Search from './components/Pages/Search'
-// import SingleProduct from './components/Pages/SingleProduct'
-// import Signup from './components/Auth/Signup'
-// import Login from './components/Auth/Login'
-// import Logout from './components/Auth/Logout'
-// import { loginUser, logout } from './store/authSlice'
-// import { setCart,clearCart } from './store/cartSlice'
-// import Cart from './components/Cart/Cart'
-// import Shipping from './components/Checkout/Shipping'
-// import Checkout from './components/Checkout/Checkout'
-// import Ordershow from './components/Order/Ordershow'
-// import { fetchCartProducts } from './store/cartSlice'
-// import { fetchOrder } from './store/orderSlice'
-// import { Elements } from '@stripe/react-stripe-js';
-// import { loadStripe } from '@stripe/stripe-js';
-// import OrderSingle from './components/Order/OrderSingle'
-// import Review from './components/Order/Review'
-// import Ordersuccess from './components/Pages/Ordersuccess'
-// const apiUrl = import.meta.env.VITE_BACKEND_URL;
-// import api from './api'
-
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';

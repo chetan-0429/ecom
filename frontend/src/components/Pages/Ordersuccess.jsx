@@ -31,7 +31,6 @@ function Ordersuccess() {
           if (session) {
             setSession(session);
             clearCartFun();
-            console.log('Payment Session Details: ', session);
           }
         })
         .catch((err) => {

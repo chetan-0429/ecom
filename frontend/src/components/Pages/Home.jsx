@@ -4,7 +4,7 @@ import Productcard from './Pro.jsx';
 import { useSelector } from 'react-redux';
 import ProductHeader from './ProductHeader.jsx';
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
-
+import { ColorRing } from 'react-loader-spinner';
 function Home() {
     const {isAuthenticated} = useSelector((state) => (state.auth));
     const [products, setProducts] = useState([]);
@@ -111,13 +111,14 @@ function Home() {
         return () => {
             window.removeEventListener('beforeunload', clearSessionStorageOnRefresh);
         };
+        
     }, []);
 
     return (
         <>
             <ProductHeader />
             <div>
-                <div className='flex flex-wrap ml-3'>
+                <div className='flex flex-wrap justify-center'>
                     {products.map((pro, index) => (
                         <div key={index} onClick={saveScrollPosition}>
                             <Productcard
@@ -130,7 +131,20 @@ function Home() {
                     ))}
                 </div>
                 <div ref={spinnerRef}>
-                    {loading && <h1 className='mb-5'>Loading more Products...</h1>}
+                    {/* {loading && <h1 className='mb-5'>Loading more Products...</h1>} */}
+                    {loading &&     
+                      <div className="flex justify-center mt-4">
+                      <ColorRing
+                        visible={true}
+                        height="60"
+                        width="60"
+                        ariaLabel="color-ring-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="color-ring-wrapper"
+                        colors={['grey', 'grey', 'grey', 'grey', 'grey']}
+                      />
+                    </div>
+    }
                     {error && <p>Error fetching products</p>}
                 </div>
             </div>

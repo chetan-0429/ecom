@@ -35,19 +35,19 @@ async function getAllOrder(req,res,next){
         return res.status(500).json({ success: false, message: "An error occurred in getting order", error: err.message });
     }
 }
-async function updateOrder(req,res,next){
-    const {orderId,itemId,status} = req.body;
-    try{
-       const order = await Order.findOne({_id:orderId});
-       const item = order.orderItems.find((item)=> item._id == itemId)
-       item.status = status;
-       await order.save();
-       res.status(201).json({sucess:true});
+// async function updateOrder(req,res,next){
+//     const {orderId,itemId,status} = req.body;
+//     try{
+//        const order = await Order.findOne({_id:orderId});
+//        const item = order.orderItems.find((item)=> item._id == itemId)
+//        item.status = status;
+//        await order.save();
+//        res.status(201).json({sucess:true});
 
-    }catch(err){
-        return res.status(500).json({ success: false, message: "An error occurred in getting order", error: err.message });
-    }
-}
+//     }catch(err){
+//         return res.status(500).json({ success: false, message: "An error occurred in getting order", error: err.message });
+//     }
+// }
 async function updateOrder(req, res, next) {
   const { orderId, itemId, status } = req.body;
   
@@ -73,29 +73,60 @@ async function updateOrder(req, res, next) {
 }
 
 //users
-async function getOrder(req,res,next){
-    if(!req.user) {return res.json({success:false})};
-    const {userId} = req.user;
-      try{
-        const savedOrder = await Order.find({userId});
-        const orderDetails = [];
-        savedOrder.forEach(order => {
-            orderDetails.push({
-                shippingAddress:order.shippingAddress,
-                id: order._id,
-                orderItems: order.orderItems,
-                paymentInfo: order.paymentInfo,
-                itemsPrice: order.itemsPrice,
-                totalPrice: order.totalPrice,
-                taxPrice: order.taxPrice,
-                shippingPrice: order.shippingPrice,
-                orderStatus: order.orderStatus,
-        })
-      })
-      res.json({success:true,orderDetails})
-    }catch(err){
-        return res.status(500).json({ success: false, message: "An error occurred in getting order", error: err.message });
+// async function getOrder(req,res,next){
+//     if(!req.user) {return res.json({success:false})};
+//     const {userId} = req.user;
+//       try{
+//         const savedOrder = await Order.find({userId});
+//         const orderDetails = [];
+//         savedOrder.forEach(order => {
+//             orderDetails.push({
+//                 shippingAddress:order.shippingAddress,
+//                 id: order._id,
+//                 orderItems: order.orderItems,
+//                 paymentInfo: order.paymentInfo,
+//                 itemsPrice: order.itemsPrice,
+//                 totalPrice: order.totalPrice,
+//                 taxPrice: order.taxPrice,
+//                 shippingPrice: order.shippingPrice,
+//                 orderStatus: order.orderStatus,
+//         })
+//       })
+//       res.json({success:true,orderDetails})
+//     }catch(err){
+//         return res.status(500).json({ success: false, message: "An error occurred in getting order", error: err.message });
 
+//     }
+// }
+async function getOrder(req, res, next) {
+    if (!req.user) {
+        return res.json({ success: false });
+    }
+    const { userId } = req.user;
+    try {
+        // Fetch orders sorted by the most recent
+        const savedOrder = await Order.find({ userId }).sort({ createdAt: -1 });
+        
+        const orderDetails = savedOrder.map(order => ({
+            shippingAddress: order.shippingAddress,
+            id: order._id,
+            orderItems: order.orderItems,
+            paymentInfo: order.paymentInfo,
+            itemsPrice: order.itemsPrice,
+            totalPrice: order.totalPrice,
+            taxPrice: order.taxPrice,
+            shippingPrice: order.shippingPrice,
+            orderStatus: order.orderStatus,
+            createdAt: order.createdAt
+        }));
+        
+        res.json({ success: true, orderDetails });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred in getting order",
+            error: err.message,
+        });
     }
 }
 

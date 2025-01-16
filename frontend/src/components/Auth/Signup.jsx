@@ -71,8 +71,7 @@ function Signup() {
                             Email Address
                         </label>
                         <input
-                            // type="email"
-                            type="text"
+                            type="email"
                             id="email"
                             name="email"
                             value={email}

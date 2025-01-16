@@ -22,8 +22,8 @@ function Login() {
         e.preventDefault();
         dispatch(loginUser({ email, password }))
             .then((response) => {
-                if (response.payload && response.payload.token) {
-                    toast.success('Login successful!');
+                if (response.payload && response.payload.token) { 
+                        navigate("/");
                 } else {
                     toast.error('Login failed. Please check your credentials.');
                 }
@@ -47,7 +47,7 @@ function Login() {
                             Email Address
                         </label>
                         <input
-                            type="text"
+                            type="email"
                             id="email"
                             name="email"
                             value={email}
